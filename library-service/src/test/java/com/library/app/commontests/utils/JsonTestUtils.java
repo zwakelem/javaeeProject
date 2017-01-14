@@ -1,5 +1,7 @@
 package com.library.app.commontests.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -10,13 +12,20 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 
 @Ignore
 public class JsonTestUtils {
+
 	public static final String BASE_JSON_DIR = "json/";
+	public static final String BASE_PATH = "/home/zwakelem/git/library-app/library-service/src/test/resources/";
 
 	private JsonTestUtils() {
 	}
 
 	public static String readJsonFile(final String relativePath) {
-		final InputStream is = JsonTestUtils.class.getClassLoader().getResourceAsStream(BASE_JSON_DIR + relativePath);
+		InputStream is = null;
+		try {
+			is = new FileInputStream(BASE_PATH + BASE_JSON_DIR + relativePath);
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		try (Scanner s = new Scanner(is)) {
 			return s.useDelimiter("\\A").hasNext() ? s.next() : "";
 		}
