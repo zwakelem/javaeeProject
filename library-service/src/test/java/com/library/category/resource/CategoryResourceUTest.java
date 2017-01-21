@@ -14,7 +14,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.library.app.category.exception.CategoryExistantException;
 import com.library.app.category.services.CategoryServices;
+import com.library.category.common.model.HttpCode;
 
 public class CategoryResourceUTest {
 
@@ -39,8 +41,23 @@ public class CategoryResourceUTest {
 
 		final Response response = categoryResource
 				.add(readJsonFile(getPathFileRequest(PATH_RESOURCE, "newCategory.json")));
-		assertThat(response.getStatus(), is(equalTo(201)));
+		assertThat(response.getStatus(), is(equalTo(HttpCode.CREATED.getCode())));
 		assertJsonMatchesExpectedJson(response.getEntity().toString(), "{\"id\": 1}");
+	}
+
+	@Test
+	public void addExistentCategory() {
+		when(categoryServices.add(java())).thenThrow(new CategoryExistantException());
+
+		final Response response = categoryResource
+				.add(readJsonFile(getPathFileRequest(PATH_RESOURCE, "newCategory.json")));
+		assertThat(response.getStatus(), is(equalTo(HttpCode.VALIDATION_ERROR.getCode())));
+		assertJsonResponseWithFile(response, "categoryExistent.json");
+
+	}
+
+	private void assertJsonResponseWithFile(final Response response, final String fileName) {
+		assertJsonMatchesFileContent(response.getEntity().toString(), getPathFileResponse(PATH_RESOURCE, fileName));
 	}
 
 }

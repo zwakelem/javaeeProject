@@ -2,7 +2,7 @@ package com.library.category.common.model;
 
 public enum HttpCode {
 
-	CREATED(201);
+	CREATED(201), VALIDATION_ERROR(422);
 
 	private int code;
 
